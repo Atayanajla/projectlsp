@@ -13,9 +13,12 @@
             background-repeat: no-repeat;
             background-size: cover;
             background-position: center;
-            background-color: rgba(0, 0, 0, 0.9);
+            background-color: gainsboro;
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css">
+
 </head>
 
 <body>
@@ -33,11 +36,21 @@
                     <input type="password" class="form-control" id="password" name="password">
                 </div>
                 <button type="submit" class="btn btn-primary">Login</button>
-                <p class="pt-3">Andah belum Punya Akun? <a href="/user/register">Register</a></p>
+                <p class="pt-3">Andah belum Punya Akun? <a href="register">Register</a></p>
             </form>
         </div>
+        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous">
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.js"></script>
+        <script>
+            @if (Session::has("wrongAuth"))
+                toastr.error('Email atau Password tidak sesuai')
+            @endif
         </script>
 </body>
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Data Mahasiswa</title>
+    <title>Update</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 
@@ -27,34 +27,35 @@
         </div>
     </nav>
 
+    <p class="text-center mt-4 fs-3 fw-bold">Ubah Data Mahasiswa</p>
 
-    <p class="text-center mt-4 fs-3 fw-bold">Data Mahasiswa</p>
-
-    <form class="col-md-5 m-5 mx-auto" action="/profile/update" method="post">
+    <form class="col-md-5 m-5 mx-auto" action="/admin/update-{{ $getUser->id }}/store" method="post">
         @csrf
         @method('put')
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Nama Lengkap</span>
-            <input type="text" name="namaLengkap" class="form-control" placeholder="{{ Auth::user()->namaLengkap }}"
+            <input type="text" name="namaLengkap" class="form-control" value="{{ $getUser->namaLengkap }}"
                 aria-label="Username" aria-describedby="basic-addon1">
         </div>
 
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon2">Alamat KTP</span>
-            <input type="text" value="{{ Auth::user()->alamatKTP }}"  name="alamatKTP" class="form-control" placeholder="Alamat KTP" aria-label="Recipient's username"
+            <input type="text" value="{{ $getUser->alamatKTP }}"  name="alamatKTP" class="form-control" placeholder="Alamat KTP" aria-label="Recipient's username"
                 aria-describedby="basic-addon2">
         </div>
+
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon2">Alamat Lengkap Sekarang</span>
-            <input type="text" value="{{ Auth::user()->alamatSaatIni }}"  name="alamatSaatIni" class="form-control" placeholder="Alamat Lengkap Saat ini"
+            <input type="text" value="{{ $getUser->alamatSaatIni }}"  name="alamatSaatIni" class="form-control" placeholder="Alamat Lengkap Saat ini"
                 aria-label="Recipient's username" aria-describedby="basic-addon2">
         </div>
 
         <div class="input-group mb-3 ">
             <span class="input-group-text">Provinsi</span>
             <select class="provinsi w-50 " name="provinsi">
+                <option readonly selected>PROVINSI SAAT INI: {{ $getUser->provinsi }}</option>
                 @foreach ($provinsiData['value'] as $provinsi)
-                    <option value="{{ $provinsi['id'] }}">{{ $provinsi['name'] }}</option>
+                <option data-id-provinsi={{ $provinsi["id"] }} value="{{ $provinsi['name'] }}">{{ $provinsi['name'] }}</option>
                 @endforeach
             </select>
         </div>
@@ -62,80 +63,80 @@
         <div class="input-group mb-3">
             <span class="input-group-text">Kabupaten</span>
             <select class="kabupaten w-50" name="kabupaten">
+                <option readonly selected>KABUPATEN SAAT INI: {{ $getUser->kabupaten }}</option>
             </select>
         </div>
 
         <div class="input-group mb-3">
             <span class="input-group-text">Kecamatan</span>
             <select class="kecamatan w-50" name="kecamatan">
-
+                <option readonly selected>KECAMATAN SAAT INI: {{ $getUser->kecamatan }}</option>
             </select>
         </div>
 
         <div class="input-group mb-3">
             <span class="input-group-text">No Telp</span>
-            <input type="text" name="noTelpon" value="{{ Auth::user()->noTelpon }}" class="form-control" placeholder="NoTelp" aria-label="NoTelp">
+            <input type="number" name="noTelpon" value="{{ $getUser->noTelpon }}" class="form-control" placeholder="NoTelp" aria-label="NoTelp">
         </div>
 
         <div class="input-group mb-3">
             <span class="input-group-text">No HP</span>
-            <input type="text" value="{{ Auth::user()->noHp }}"  name="noHp" class="form-control" placeholder="NoHp" aria-label="NoHp">
+            <input type="number" value="{{ $getUser->noHp }}"  name="noHp" class="form-control" placeholder="NoHp" aria-label="NoHp">
         </div>
 
         <div class="input-group mb-3">
             <span class="input-group-text">Email</span>
-            <input type="email" name="email" disabled class="form-control" placeholder="{{ Auth::user()->email }}" aria-label="email">
+            <input type="email" name="email" disabled class="form-control" value="{{ $getUser->email }}" aria-label="email">
         </div>
 
         <div class="input-group mb-3">
             <span class="input-group-text">Kewarganegaraan</span>
-            <select class="w-50" name="kewarganegaraan">
+            <select class="w-50 form-control" name="kewarganegaraan">
                 <option value="">select</option>
-                <option @if (Auth::user()->kewarganegaraan === "WNI Asli") selected @endif value="WNI Asli">WNI Asli</option>
-                <option @if (Auth::user()->jk === "WNI Keturunan") selected @endif value="WNI Keturunan">WNI Keturunan</option>
-                <option @if (Auth::user()->jk === "WNA") selected @endif value="WNA">WNA</option>
+                <option @if ($getUser->kewarganegaraan === "WNI Asli") selected @endif value="WNI Asli">WNI Asli</option>
+                <option @if ($getUser->kewarganegaraan === "WNI Keturunan") selected @endif value="WNI Keturunan">WNI Keturunan</option>
+                <option @if ($getUser->kewarganegaraan === "WNA") selected @endif value="WNA">WNA</option>
             </select>
         </div>
 
         <div class="input-group mb-3">
             <span class="input-group-text">Tanggal Lahir</span>
-            <input type="date" name="tgl_lahir" class="form-control" value="{{ Auth::user()->tgl_lahir }}">
+            <input type="date" name="tgl_lahir" class="form-control" value="{{ $getUser->tgl_lahir }}">
         </div>
 
         <div class="input-group mb-3">
             <span class="input-group-text">Tempat Lahir</span>
-            <input type="text" name="tmp_lahir" class="form-control" placeholder=".." value="{{ Auth::user()->tmp_lahir }}">
+            <input type="text" name="tmp_lahir" class="form-control" placeholder=".." value="{{ $getUser->tmp_lahir }}">
         </div>
 
         <div class="input-group mb-3">
             <span class="input-group-text">Jenis Kelamin</span>
-            <select class="w-50" name="jk">
+            <select class="w-50 pilihan" name="jk">
                 <option value="">select</option>
-                <option @if (Auth::user()->jk === "pria") selected @endif value="pria">Pria</option>
-                <option @if (Auth::user()->jk === "wanita") selected @endif value="wanita">wanita</option>
+                <option @if ($getUser->jk === "pria") selected @endif value="pria">Pria</option>
+                <option @if ($getUser->jk === "wanita") selected @endif value="wanita">wanita</option>
             </select>
         </div>
 
         <div class="input-group mb-3">
             <span class="input-group-text">Status Menikah</span>
-            <select class="w-50" name="statusMenikah">
+            <select class="w-50 pilihan" name="statusMenikah">
                 <option value="">select</option>
-                <option @if (Auth::user()->statusMenikah === "Belum Menikah") selected @endif value="Belum Menikah">Belum Menikah</option>
-                <option @if (Auth::user()->statusMenikah === "Menikah") selected @endif value="Menikah">Menikah</option>
-                <option @if (Auth::user()->statusMenikah === "Lain-lain (janda/duda)") selected @endif value="Lain-lain (janda/duda)">Lain-lain (janda/duda)</option>
+                <option @if ($getUser->statusMenikah === "Belum Menikah") selected @endif value="Belum Menikah">Belum Menikah</option>
+                <option @if ($getUser->statusMenikah === "Menikah") selected @endif value="Menikah">Menikah</option>
+                <option @if ($getUser->statusMenikah === "Lain-lain (janda/duda)") selected @endif value="Lain-lain (janda/duda)">Lain-lain (janda/duda)</option>
             </select>
         </div>
 
         <div class="input-group mb-3">
             <span class="input-group-text">Agama</span>
-            <select class="w-50" name="agama">
-                <option value="">select</option>
-                <option value="Islam">Islam</option>
-                <option value="Katolik">Katolik</option>
-                <option value="Kristen">Kristen</option>
-                <option value="Hindu">Hindu</option>
-                <option value="Budha">Budha</option>
-                <option value="lain-lain">lain-lain</option>
+            <select class="w-50 pilihan" name="agama">
+                <option @if ($getUser->agama === "Islam")  selected @endif value="Islam">Islam</option>
+                <option @if ($getUser->agama === "Katolik") selected @endif  value="Katolik">Katolik</option>
+                <option @if ($getUser->agama === "Kristen") selected @endif  value="Kristen">Kristen</option>
+                <option @if ($getUser->agama === "Hindu") selected @endif  value="Hindu">Hindu</option>
+                <option @if ($getUser->agama === "Budha") selected @endif value="Budha">Budha</option>
+                <option @if ($getUser->agama === "lain-lain") selected @endif value="lain-lain">lain-lain</option>
             </select>
         </div>
 
@@ -144,7 +145,10 @@
             <input type="file" class="form-control" name="imgProfile">
         </div>
 
-        <button type="edit" class="btn btn-primary mt-3 w-100">submit</button>
+        <div class="d-flex justify-content-between w-100">
+            <button type="submit" class="btn btn-primary w-25 mt-3">Edit</button>
+            <a href="/admin/dashboard" class="btn btn-outline-dark w-25 mt-3">Back</a>
+        </div>
     </form>
 
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
@@ -153,11 +157,6 @@
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css">
-
 
     <script>
         var $jq = jQuery.noConflict();
@@ -173,6 +172,9 @@
         $jq(document).ready(function() {
             $jq('.kecamatan').select2();
         });
+        $jq(document).ready(function() {
+            $jq('.pilihan').select2();
+        });
     </script>
 
     <script>
@@ -180,7 +182,7 @@
             jQuery('.provinsi').select2();
 
             jQuery('.provinsi').on('change', function() {
-                var idProvinsi = jQuery(this).val();
+                var idProvinsi = jQuery(this).find(':selected').data('id-provinsi');
 
                 if (idProvinsi === undefined) {
                     console.log('Error: id_provinsi is undefined');
@@ -206,7 +208,7 @@
                             jQuery('.kabupaten').empty();
 
                             jQuery.each(kabupatenData, function(index, kabupaten) {
-                                jQuery('.kabupaten').append('<option value="' + kabupaten.id + '">' + kabupaten.name + '</option>');
+                                jQuery('.kabupaten').append('<option data-id-kabupaten="'+ kabupaten.id + '" value="' + kabupaten.name + '">' + kabupaten.name + '</option>');
                             });
 
                             jQuery('.kabupaten').select2();
@@ -227,7 +229,7 @@
             jQuery('.kabupaten').select2();
 
             jQuery('.kabupaten').on('change', function() {
-                var idKabupaten = jQuery(this).val();
+                var idKabupaten = jQuery(this).find(":selected").data('id-kabupaten');
 
                 if (idKabupaten === undefined) {
                     console.log('Error: id_kabupaten is undefined');
@@ -253,7 +255,7 @@
                             jQuery('.kecamatan').empty();
 
                             jQuery.each(kecamatanData, function(index, kecamatan) {
-                                jQuery('.kecamatan').append('<option value="' + kecamatan.id + '">' + kecamatan.name + '</option>');
+                                jQuery('.kecamatan').append('<option value="' + kecamatan.name + '">' + kecamatan.name + '</option>');
                             });
 
                             jQuery('.kecamatan').select2();
@@ -267,11 +269,6 @@
                 });
             });
         });
-    </script>
-    <script>
-        @if(Session::has("successUpdate"))
-            toastr.success("Berhasil melakukan update");
-        @endif
     </script>
 
 </body>

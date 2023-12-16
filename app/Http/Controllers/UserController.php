@@ -24,29 +24,32 @@ class UserController extends Controller
         $user->namaLengkap = $request->namaLengkap;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
-        // $user->remember_token = Str::random(60);
         $user->save();
-        // dd($user);
-        return redirect()->back()->with('successRegist', 'Akun berhasil didaftarkan 😍');
+
+        return redirect('/login')->with('successRegist', 'Akun berhasil didaftarkan');
     }
 
     public function storeLogin(Request $request)
-    { {
+    {   {
             if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
 
-                $response = new Response(redirect('/profile')->with('berhasilLogin', 'Selamat Datang Di Pyarr'));
+                if (Auth::user()->role_user === 1) {
+                    $response = new Response(redirect('/admin/dashboard')->with('berhasilLogin', 'Selamat Datang Di WebsiteKita'));
+                } elseif (Auth::user()->role_user === 0 ) {
+                    $response = new Response(redirect('/profile')->with('berhasilLogin', 'Selamat Datang Di WebsiteKita'));
+                }
                 return $response;
             } else {
-                return redirect()->back()->with('wrongAuth', 'Email atau Password tidak sesuai');
+
+                return redirect('/login')->with('error', 'Email atau Password tidak sesuai');
             }
         }
-    }
 
+    }
 
     public function profilePage()
     {
         $apiKey = "6abe431a61b948335187e364e0145695337c6de46f06165c6cbab537dc28a49a";
-        //get apikey yg di dapat
 
         $responseProvinsi = Http::get("https://api.binderbyte.com/wilayah/provinsi", [
             'api_key' => $apiKey,
@@ -59,6 +62,12 @@ class UserController extends Controller
         $provinsiData = $responseProvinsi->json();
 
         return view('profile', compact('provinsiData', 'apiKey'));
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+        return redirect('/login');
     }
 
     public function profileUpdate(Request $request)
@@ -82,18 +91,83 @@ class UserController extends Controller
             'agama' => $request->input('agama'),
         ];
 
+        if ($request->hasFile("imgProfile")) {
+            $request->file("imgProfile")->move("images/", $request->file("imgProfile")->getClientOriginalName());
+            $userID->imgProfile = $request->file("imgProfile")->getClientOriginalName();
+            $userID->save();
+        }
+
         $user = DB::table('users')->find($userID);
 
         if ($user) {
             $updated = DB::table('users')->where('id', $userID)->update($newUserData);
 
             if ($updated) {
-                return redirect()->back()->with('updateProfile', "Profil berhasil diperbarui");
+                return redirect()->back()->with('successUpdate', "Profil berhasil diperbarui");
             } else {
                 return redirect()->back()->with('updateProfile', "Gagal memperbarui profil. Silakan coba lagi.");
             }
         } else {
             return redirect()->back()->with('updateProfile', "Gagal memperbarui profil. Pengguna tidak ditemukan");
         }
+    }
+
+    public function createuser()
+    {
+        $apiKey = "6abe431a61b948335187e364e0145695337c6de46f06165c6cbab537dc28a49a";
+
+        $responseProvinsi = Http::get("https://api.binderbyte.com/wilayah/provinsi", [
+            'api_key' => $apiKey,
+        ]);
+
+        if (!$responseProvinsi->successful()) {
+            return response()->json(['error' => 'Failed to retrieve provinsi data.'], 500);
+        }
+
+        $provinsiData = $responseProvinsi->json();
+        return view('admin.adminCreate', compact(['provinsiData', 'apiKey']));
+    }
+
+    public function createuserStore(Request $request)
+    {
+        UserModel::create($request->all());
+        return redirect('/admin/dashboard');
+    }
+
+    public function updateUser($id)
+    {
+        $getUser = UserModel::findOrFail($id);
+        $apiKey = "6abe431a61b948335187e364e0145695337c6de46f06165c6cbab537dc28a49a";
+
+        $responseProvinsi = Http::get("https://api.binderbyte.com/wilayah/provinsi", [
+            'api_key' => $apiKey,
+        ]);
+
+        if (!$responseProvinsi->successful()) {
+            return response()->json(['error' => 'Failed to retrieve provinsi data.'], 500);
+        }
+
+        $provinsiData = $responseProvinsi->json();
+        return view('admin.adminUpdate', compact(["getUser", "apiKey", "provinsiData"]));
+    }
+
+    public function updateUserStore($id, Request $request)
+    {
+        $updateUser = UserModel::findOrFail($id);
+        $updateUser->update($request->all());
+
+        if ($request->hasFile("imgProfile")) {
+            $request->file("imgProfile")->move("images/", $request->file("imgProfile")->getClientOriginalName());
+            $updateUser->imgProfile = $request->file("imgProfile")->getClientOriginalName();
+            $updateUser->save();
+        }
+
+        return redirect("/admin/dashboard");
+    }
+
+    public function deleteUserStore($id)
+    {
+        $hapusUser = UserModel::find($id)->delete();
+        return redirect()->back();
     }
 }

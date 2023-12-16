@@ -13,7 +13,7 @@
             background-repeat: no-repeat;
             background-size: cover;
             background-position: center;
-            background-color: rgba(0, 0, 0, 0.9);
+            background-color: gainsboro;
         }
     </style>
 </head>
@@ -21,9 +21,9 @@
 <body>
     <div class="container">
         <div class="row align-items-start pt-5">
-            <form method="post" action="/register/store">
+            <form method="post" action="/register/store" >
                 @csrf
-             <div class="pt-3 col-md-4 shadow-sm bg-body-tertiary rounded mx-auto">
+             <div class="pt-3 col-md-4 shadow-sm bg-body-tertiary rounded mx-auto p-3">
                 <h6 class="fs-3 fw-bold text-center">Register</h6>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
